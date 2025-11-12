@@ -1,69 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ subject.name }} - Lessons</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
-<body class="bg-light">
+  <meta charset="UTF-8">
+  <title>{{ subject.name }} - Lessons | EduTrack LMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1e88e5, #42a5f5);
+      color: #333;
+      min-height: 100vh;
+    }
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">EduTrack LMS</a>
-        <div class="d-flex">
-            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light me-2">Dashboard</a>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
-        </div>
+    .navbar {
+      background-color: rgba(21, 101, 192, 0.95) !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #fff !important;
+    }
+
+    .btn-outline-light {
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .btn-danger {
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 2rem 2.5rem;
+      margin-top: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      color: #1565c0;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      border: none;
+      border-radius: 16px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      color: #0d47a1;
+      font-weight: 600;
+    }
+
+    .card-text {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .progress {
+      height: 6px;
+      border-radius: 5px;
+      background-color: #e0e0e0;
+      margin-top: 8px;
+    }
+
+    .progress-bar {
+      background-color: #1e88e5;
+    }
+
+    .btn-primary {
+      background-color: #1e88e5;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+      background-color: #1565c0;
+    }
+
+    .btn-secondary {
+      border-radius: 8px;
+      opacity: 0.7;
+    }
+
+    .alert-info {
+      background-color: #e3f2fd;
+      border: none;
+      color: #1565c0;
+      font-weight: 500;
+    }
+
+    .back-btn {
+      margin-top: 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      padding: 8px 16px;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand" href="#">EduTrack LMS</a>
+    <div class="d-flex">
+      <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light me-2">Dashboard</a>
+      <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
     </div>
+  </div>
 </nav>
 
 <div class="container">
-    <h2 class="text-center mb-4">📘 {{ subject.name }} - Lessons</h2>
+  <h2>📘 {{ subject.name }} - Lessons</h2>
 
-    {% if lesson_progress %}
-        <div class="row">
-            {% for lesson, progress in lesson_progress %}
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ lesson.title }}</h5>
-                            <p class="card-text">{{ lesson.description }}</p>
-                            <ul class="list-unstyled mb-3">
-                                <li><strong>Status:</strong> 
-                                    {% if progress.completed %}
-                                        <span class="text-success">Completed</span>
-                                    {% else %}
-                                        <span class="text-danger">Incomplete</span>
-                                    {% endif %}
-                                </li>
-                                <li><strong>Score:</strong> {{ progress.score }}%</li>
-                                <li><strong>Unlocked:</strong> 
-                                    {% if progress.unlocked %}
-                                        <span class="text-success">Yes</span>
-                                    {% else %}
-                                        <span class="text-muted">No</span>
-                                    {% endif %}
-                                </li>
-                            </ul>
-                            {% if progress.unlocked %}
-                                <a href="#" class="btn btn-primary btn-sm">Start Lesson</a>
-                            {% else %}
-                                <button class="btn btn-secondary btn-sm" disabled>Locked</button>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="alert alert-info text-center">
-            No lessons found for this subject.
-        </div>
-    {% endif %}
+  {% if lesson_progress %}
+    <div class="row">
+      {% for lesson, progress in lesson_progress %}
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{ lesson.title }}</h5>
+              <p class="card-text">{{ lesson.description }}</p>
 
-    <div class="text-center mt-4">
-        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">⬅ Back to Dashboard</a>
+              <div class="d-flex justify-content-between small text-muted">
+                <span>Status:
+                  {% if progress.completed %}
+                    <span class="text-success fw-semibold">Completed</span>
+                  {% else %}
+                    <span class="text-danger fw-semibold">Incomplete</span>
+                  {% endif %}
+                </span>
+                <span>Score: {{ progress.score }}%</span>
+              </div>
+
+              <div class="progress mt-2">
+                <div class="progress-bar" role="progressbar" style="width: {{ progress.score }}%;"></div>
+              </div>
+
+              <div class="mt-3">
+                {% if progress.unlocked %}
+                  <a href="#" class="btn btn-primary btn-sm w-100">Start Lesson</a>
+                {% else %}
+                  <button class="btn btn-secondary btn-sm w-100" disabled>🔒 Locked</button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     </div>
+  {% else %}
+    <div class="alert alert-info text-center">
+      No lessons found for this subject.
+    </div>
+  {% endif %}
+
+  <div class="text-center">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary back-btn">⬅ Back to Dashboard</a>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
