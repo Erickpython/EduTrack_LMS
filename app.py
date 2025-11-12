@@ -235,36 +235,48 @@ def dashboard():
     if 'student_id' not in session:
         return redirect(url_for('login'))
     
-    student_id = session['student_id']
-    student = Student.query.get(student_id)
+    student = Student.query.get(session['student_id'])
 
-    #getting lesson and progress
-    progress_data = (
-        db.session.query(Lesson, Progress, Subject, Grade)
-        .join(Progress, Progress.lesson_id == Lesson.id)
-        .join(Subject, Lesson.subject_id == Subject.id)
-        .join(Grade, Subject.grade_id == Grade.id)
-        .filter(Progress.student_id == student_id)
-        .order_by(Grade.id, Subject.id, Lesson.order)
+    #getting grades 
+    accessible_grades = Grade.query.filter(Grade.id <= student.grade_id).all()
+
+    # getting subjects 
+    grades_data = []
+    for grade in accessible_grades:
+        subjects = Subject.query.filter_by(grade_id=grade.id).all()
+        grades_data.append(
+            {
+                'grade': grade,
+                'subjects': subjects
+            }
+        )
+
+    return render_template('dashboard.html', student=student, grades_data=grades_data)
+
+
+
+
+@app.route('/subject/<int:subject_id>')
+def view_subject(subject.id):
+    if "student_id"not in session:
+        return redirect(url_for('login'))
+    
+
+    student_id = session['student_id']
+    subject = Subject.query.get_or_404(subject_id)
+
+    lesson_progress = (
+        db.session.query(Lesson, Progress)
+        .outerjoin(Progress, (Progress.lesson_id == Lesson.id) & (Progress.student_id == student_id))
+        .filter(Lesson.subject_id == subject_id)
+        .order_by(Lesson.order)
         .all()
-        
     )
 
-    #prepare structured data for easier use in template 
-    lessons_by_subject = {}
-    for lesson, progress, subject, grade in progress_data:
-        subject.name = f"{subject.name} ({grade.name})"
-        if subject.name not in lessons_by_subject:
-            lessons_by_subject[subject.name] = []
-        lessons_by_subject[subject.name].append({
-            'lesson': lesson.id,
-            'title': lesson.title,
-            'completed': progress.completed,
-            'unlocked': progress.unlocked
-        })
+    return render_template('subject_lessons.html', subject=subject, lesson_progress=lesson_progress)
 
 
-    return render_template('dashboard.html', name=student.name, lessons_by_subject=lessons_by_subject)
+
 
 @app.route('/logout')
 def logout():
