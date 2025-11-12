@@ -253,11 +253,16 @@ def dashboard():
 
     return render_template('dashboard.html', student=student, grades_data=grades_data)
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('index'))
 
 
 
 @app.route('/subject/<int:subject_id>')
-def view_subject(subject.id):
+def view_subject(subject_id):
     if "student_id"not in session:
         return redirect(url_for('login'))
     
@@ -273,16 +278,15 @@ def view_subject(subject.id):
         .all()
     )
 
+    print(f"Lesson Progress Data: {lesson_progress}")
+    for lp in lesson_progress:
+        print (lp)
+
+    # if not lesson_progress:
+    #     flash('No lessons found for this subject.', 'warning')
+    #     return redirect(url_for('dashboard'))
+
     return render_template('subject_lessons.html', subject=subject, lesson_progress=lesson_progress)
-
-
-
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash('You have been logged out.', 'info')
-    return redirect(url_for('index'))
 
 
 # ======= RUN THE APP =======
