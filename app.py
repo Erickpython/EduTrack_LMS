@@ -37,6 +37,13 @@ class Student(db.Model):
 with app.app_context():
     db.create_all()
 
+# default grades
+    if not Grade.query.first():
+        for i in range (1, 10):
+            grade = Grade(name=f'Grade {i}')
+            db.session.add(grade)
+        db.session.commit()
+
 
 # ======= ROUTES =======
 @app.route('/')
@@ -91,8 +98,8 @@ def register():
         # Hash the password using a secure method
         hashed_pw = generate_password_hash(password)
         new_student = Student(name=name, email=email, password=hashed_pw, grade_id=grade_id)
+        db.session.add(new_student)
         try:
-            db.session.add(new_student)
             db.session.commit()
         except Exception as exc:
             db.session.rollback()
