@@ -234,7 +234,37 @@ def login():
 def dashboard():
     if 'student_id' not in session:
         return redirect(url_for('login'))
-    return render_template('dashboard.html', name=session['student_name'])
+    
+    student_id = session['student_id']
+    student = Student.query.get(student_id)
+
+    #getting lesson and progress
+    progress_data = (
+        db.session.query(Lesson, Progress, Subject, Grade)
+        .join(Progress, Progress.lesson_id == Lesson.id)
+        .join(Subject, Lesson.subject_id == Subject.id)
+        .join(Grade, Subject.grade_id == Grade.id)
+        .filter(Progress.student_id == student_id)
+        .order_by(Grade.id, Subject.id, Lesson.order)
+        .all()
+        
+    )
+
+    #prepare structured data for easier use in template 
+    lessons_by_subject = {}
+    for lesson, progress, subject, grade in progress_data:
+        subject.name = f"{subject.name} ({grade.name})"
+        if subject.name not in lessons_by_subject:
+            lessons_by_subject[subject.name] = []
+        lessons_by_subject[subject.name].append({
+            'lesson': lesson.id,
+            'title': lesson.title,
+            'completed': progress.completed,
+            'unlocked': progress.unlocked
+        })
+
+
+    return render_template('dashboard.html', name=student.name, lessons_by_subject=lessons_by_subject)
 
 @app.route('/logout')
 def logout():
