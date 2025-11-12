@@ -1,4 +1,4 @@
-import os
+import os, re
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -16,7 +16,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # ======= INITIALIZE DATABASE =======
 db = SQLAlchemy(app)
 # Enable CSRF protection (templates can use {{ csrf_token() }})
-csrf = CSRFProtect(app)
+csrf = CSRFProtect(app)   # removing csfr
 
 # ======= USER MODEL =======
 class Grade(db.Model):
@@ -58,18 +58,12 @@ def register():
             errors.append('Name is required.')
         if not email:
             errors.append('Email is required.')
-        else:
-            import re
-            email_re = r'^[^@\s]+@[^@\s]+\.[^@\s]+$'
-            if not re.match(email_re, email):
-                errors.append('Enter a valid email address.')
+        elif not re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', email):
+            errors.append('Enter a valid email address.')
         if not password:
             errors.append('Password is required.')
-        else:
-            if len(password) < 8:
-                errors.append('Password must be at least 8 characters long.')
-            if not any(c.isalpha() for c in password) or not any(c.isdigit() for c in password):
-                errors.append('Password must contain both letters and numbers.')
+        elif len(password) < 8 or not (any(c.isalpha() for c in password) and any(c.isdigit() for c in password)):
+            errors.append('Password must be at least 8 characters long and contain both letters and numbers.')
 
         # Validate grade selection
         try:
@@ -96,7 +90,9 @@ def register():
 
         # Hash the password using a secure method
         hashed_pw = generate_password_hash(password)
+        new_student = Student(name=name, email=email, password=hashed_pw, grade_id=grade_id)
         try:
+            db.session.add(new_student)
             db.session.commit()
         except Exception as exc:
             db.session.rollback()
@@ -121,6 +117,7 @@ def login():
         student = Student.query.filter_by(email=email).first()
         if student and check_password_hash(student.password, password):
             session['student_id'] = student.id
+            session['student_name'] = student.name
             flash(f'Login successful! Welcome back, {student.name}', 'success')
             return redirect(url_for('dashboard'))
         else:
