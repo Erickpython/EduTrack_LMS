@@ -262,29 +262,22 @@ def logout():
 
 
 @app.route('/subject/<int:subject_id>')
-def view_subject(subject_id):
-    if "student_id"not in session:
+def subject_lessons(subject_id):
+    student_id = session.get('student_id')
+    if not student_id:
         return redirect(url_for('login'))
     
 
-    student_id = session['student_id']
-    subject = Subject.query.get_or_404(subject_id)
+    subject = Subject.query.get(subject_id)
+    print(f"subject selected:{subject.name} (ID: {subject.id})")
 
-    lesson_progress = (
-        db.session.query(Lesson, Progress)
-        .outerjoin(Progress, (Progress.lesson_id == Lesson.id) & (Progress.student_id == student_id))
-        .filter(Lesson.subject_id == subject_id)
-        .order_by(Lesson.order)
-        .all()
-    )
+    lessons = Lesson.query.filter_by(subject_id=subject_id).order_by(Lesson.order).all()
+    print(f"found {len(lessons)} lessons for subject ID {subject_id}")
 
-    print(f"Lesson Progress Data: {lesson_progress}")
-    for lp in lesson_progress:
-        print (lp)
-
-    # if not lesson_progress:
-    #     flash('No lessons found for this subject.', 'warning')
-    #     return redirect(url_for('dashboard'))
+    lesson_progress = []
+    for lesson in lessons:
+        progress = Progress.query.filter_by(student_id=student_id, lesson_id=lesson.id).first()
+        lesson_progress.append((lesson, progress))
 
     return render_template('subject_lessons.html', subject=subject, lesson_progress=lesson_progress)
 

@@ -28,7 +28,7 @@
               {% for subject in data.subjects %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   {{ subject.name }}
-                  <a href="{{ url_for('view_subject', subject_id=subject.id) }}" class="btn btn-sm btn-outline-primary">
+                  <a href="{{ url_for('subject_lessons', subject_id=subject.id) }}" class="btn btn-sm btn-outline-primary">
                     View Lessons →
                   </a>
                 </li>
