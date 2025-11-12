@@ -269,10 +269,8 @@ def subject_lessons(subject_id):
     
 
     subject = Subject.query.get(subject_id)
-    print(f"subject selected:{subject.name} (ID: {subject.id})")
-
     lessons = Lesson.query.filter_by(subject_id=subject_id).order_by(Lesson.order).all()
-    print(f"found {len(lessons)} lessons for subject ID {subject_id}")
+    
 
     lesson_progress = []
     for lesson in lessons:
