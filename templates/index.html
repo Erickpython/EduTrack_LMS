@@ -45,6 +45,7 @@
             display: flex;
             justify-content: center;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         a {
@@ -73,6 +74,17 @@
             background-color: #0d47a1;
         }
 
+        /* New admin button styling */
+        .admin-btn {
+            background-color: #ffca28;
+            color: #212121;
+        }
+
+        .admin-btn:hover {
+            background-color: #ffc107;
+            color: #000;
+        }
+
         footer {
             position: absolute;
             bottom: 10px;
@@ -89,6 +101,11 @@
             h1 {
                 font-size: 1.8rem;
             }
+
+            .btn-group {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -96,9 +113,11 @@
     <div class="container">
         <h1>Welcome to <span style="color:#fff; font-weight:700;">EduTrack LMS</span></h1>
         <p>Learn. Practice. Track your progress — all in one place, even offline!</p>
+        
         <div class="btn-group">
             <a href="{{ url_for('register') }}" class="register-btn">Register</a>
             <a href="{{ url_for('login') }}" class="login-btn">Login</a>
+            <a href="{{ url_for('admin_register') }}" class="admin-btn">Admin</a>
         </div>
     </div>
 
