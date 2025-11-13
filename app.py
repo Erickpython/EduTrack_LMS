@@ -95,7 +95,19 @@ class Progress(db.Model):
     def __repr__(self):
         return f'<Progress Student ID: {self.student_id}, Lesson ID: {self.lesson_id}, Completed: {self.completed}>'
 
+# admin model
+class Admin(db.Model):
+    __tablename__ = 'admins'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)  # Store hashed passwords
 
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 # ========== CREATE DATABASE TABLES ==========
 with app.app_context():
@@ -278,6 +290,62 @@ def subject_lessons(subject_id):
         lesson_progress.append((lesson, progress))
 
     return render_template('subject_lessons.html', subject=subject, lesson_progress=lesson_progress)
+
+
+@app.route('/admin/register', methods=['GET', 'POST'])
+def admin_register():
+    if request.method == 'POST':
+        name = request.form['name'].strip()
+        email = request.form['email'].strip()
+        password = request.form['password']
+
+        if Admin.query.filter_by(email=email).first():
+            flash('Admin with this email already exists.', 'danger')
+            return redirect(url_for('admin_login'))
+
+        new_admin = Admin(name=name, email=email)
+        new_admin.set_password(password)
+        db.session.add(new_admin)
+        db.session.commit()
+
+        flash('Admin registration successful! Please log in.', 'success')
+        return redirect(url_for('admin_login'))
+
+    return render_template('admin_register.html')
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        admin = Admin.query.filter_by(email=email).first()
+        if admin and admin.check_password(password):
+            session['admin_id'] = admin.id
+            session['admin_name'] = admin.name
+            flash(f'Admin login successful! Welcome back, {admin.name}', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid email or password.', 'danger')
+
+    return render_template('admin_login.html')
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    if 'admin_id' not in session:
+        flash(f"Please log in as admin to access the dashboard.", 'warning')
+        return redirect(url_for('admin_login'))
+    
+    admin = Admin.query.get(session['admin_id'])
+    students = Student.query.all()
+    return render_template('admin_dashboard.html', admin=admin, students=students)
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.clear()
+    flash('Admin has been logged out.', 'info')
+    return redirect(url_for('admin_login'))
+
 
 
 # ======= RUN THE APP =======
