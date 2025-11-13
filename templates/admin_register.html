@@ -1,98 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Registration | EduTrack LMS</title>
-<style>
-body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #20c997, #0dcaf0);
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.container {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-h2 {
-  text-align: center;
-  color: #0d6efd;
-  margin-bottom: 1.5rem;
-}
-label {
-  display: block;
-  margin-bottom: .3rem;
-  font-weight: 500;
-}
-input {
-  width: 100%;
-  padding: .6rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-button {
-  width: 100%;
-  background: #0d6efd;
-  color: white;
-  border: none;
-  padding: .7rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-button:hover {
-  background: #084298;
-}
-a {
-  display: block;
-  text-align: center;
-  margin-top: .8rem;
-  color: #0d6efd;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Registration | EduTrack LMS</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #007bff, #00c6ff);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+    }
+    .register-container {
+      background: #fff;
+      padding: 40px 35px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+    h2 {
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+    p {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #444;
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0,123,255,0.4);
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .flash-messages {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+    .flash-messages li {
+      list-style: none;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+    .flash-messages .success { background-color: #d4edda; color: #155724; }
+    .flash-messages .danger { background-color: #f8d7da; color: #721c24; }
+    .flash-messages .warning { background-color: #fff3cd; color: #856404; }
+    .links a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>Admin Registration</h2>
+  <div class="register-container">
+    <h2>Admin Registration</h2>
+    <p>Authorized personnel only. Enter the access code to proceed.</p>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <p style="color:
-          {% if category == 'success' %}green
-          {% elif category == 'danger' %}red
-          {% else %}#333{% endif %};
-        ">{{ message }}</p>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
-  <form method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <label>Name</label>
-    <input type="text" name="name" required>
-    <label>Email</label>
-    <input type="email" name="email" required>
-    <label>Password</label>
-    <input type="password" name="password" required>
-    <button type="submit">Register</button>
-  </form>
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" name="name" placeholder="Enter full name" required>
 
-  <a href="{{ url_for('admin_login') }}">Already have an account? Login</a>
-</div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="Enter email address" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" placeholder="Create password" required>
+
+      <label for="access_code">Admin Access Code:</label>
+      <input type="password" id="access_code" name="access_code" placeholder="Enter secret code" required>
+
+      <button type="submit">Register as Admin</button>
+    </form>
+
+    <div class="links" style="margin-top: 15px;">
+      <p>Already have an account? <a href="{{ url_for('admin_login') }}">Login here</a></p>
+      <p><a href="{{ url_for('index') }}">← Back to Home</a></p>
+    </div>
+  </div>
 
 </body>
 </html>
