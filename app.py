@@ -303,8 +303,8 @@ def admin_register():
             flash('Invalid access code for admin registration.', 'danger')
             return redirect(url_for('admin_register'))
         
-        name = request.form['name'].strip()
-        email = request.form['email'].strip()
+        name = request.form['name']
+        email = request.form['email']
         password = request.form['password']
 
         if Admin.query.filter_by(email=email).first():
