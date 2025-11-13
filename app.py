@@ -40,7 +40,6 @@ class Student(db.Model):
     grade_id = db.Column(db.Integer, db.ForeignKey('grades.id'), nullable=False)
     current_grade_id = db.Column(db.Integer, db.ForeignKey('grades.id'))
     unlocked_grade_id = db.Column(db.Integer, db.ForeignKey('grades.id'))
-    role = db.Column(db.String(20), default='student')  # 'student' or 'admin'
 
     grade = db.relationship('Grade', foreign_keys=[grade_id], backref="registered_students")
     current_grade = db.relationship('Grade', foreign_keys=[current_grade_id], backref="current_students")
@@ -296,6 +295,14 @@ def subject_lessons(subject_id):
 @app.route('/admin/register', methods=['GET', 'POST'])
 def admin_register():
     if request.method == 'POST':
+        access_code = request.form.get['access_code']
+        expected_code = os.environ.get('ADMIN_ACCESS_CODE', 'Admin@123')
+
+
+        if access_code != expected_code:
+            flash('Invalid access code for admin registration.', 'danger')
+            return redirect(url_for('admin_register'))
+        
         name = request.form['name'].strip()
         email = request.form['email'].strip()
         password = request.form['password']
@@ -333,17 +340,14 @@ def admin_login():
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
-    if 'student_id' not in session:
-        return redirect(url_for('login'))
+    if 'admin_id' not in session:
+        flash('Please log in as admin to access the admin dashboard.', 'danger')
+        return redirect(url_for('admin_login'))
     
-    admin = Student.query.get(session['student_id'])
-    if admin.role != 'admin':
-        flash('Access denied. Admins only.', 'danger')
-        return redirect(url_for('dashboard'))
-    
+    admin = Admin.query.get(session['admin_id'])    
     students = Student.query.all()
     lessons = Lesson.query.all()
-    subjects
+    subjects = Subject.query.all()
     return render_template('admin_dashboard.html', admin=admin, students=students, lessons=lessons, subjects=subjects)
 
 @app.route('/admin/logout')
