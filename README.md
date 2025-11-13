@@ -60,10 +60,8 @@ The system is optimized for offline or limited-connectivity environments and is 
 
 ## 🗂️ Database ER Diagram
 
-(Add your link after uploading the image)
-
 **ER Diagram:**  
-`![ER Diagram](YOUR_LINK_HERE)`
+`![ER Diagram](LINK_HERE)`
 
 ### Entities
 - **Student**
@@ -72,7 +70,7 @@ The system is optimized for offline or limited-connectivity environments and is 
 - **Subject**
 - **Lesson**
 - **Progress**
-- *(Quiz can be added as an extension)*
+- **Quizes**
 
 ### Relationships
 - One **Grade** → Many **Subjects**  
@@ -85,13 +83,11 @@ The system is optimized for offline or limited-connectivity environments and is 
 
 ## 📸 Screenshots
 
-Replace each link after uploading the images.
-
-- **Home Page** – `YOUR_LINK_HERE`  
-- **Student Dashboard** – `YOUR_LINK_HERE`  
-- **Admin Dashboard** – `YOUR_LINK_HERE`  
-- **Lesson View** – `YOUR_LINK_HERE`  
-- **Quiz Page** – `YOUR_LINK_HERE`  
+- **Home Page** – `LINK_HERE`  
+- **Student Dashboard** – `LINK_HERE`  
+- **Admin Dashboard** – `LINK_HERE`  
+- **Lesson View** – `LINK_HERE`  
+- **Quiz Page** – `LINK_HERE`  
 
 ---
 
@@ -99,11 +95,12 @@ Replace each link after uploading the images.
 
 ### 💡 Idea Originator
 **Cassie Bedel**  
-LinkedIn: *(Insert link here)*  
+LinkedIn: *(https://www.linkedin.com/in/cassie-bedel-5b9271106/)*  
 Cassie conceptualized the idea of creating an LMS that can function offline and improve student learning outcomes.
 
 ### 👨‍💻 Lead Developer
 **Erick Wambugu**  
+LinkedIn: *(https://www.linkedin.com/in/erick-wambugu-425a15161/)*
 Full system development — backend, UI, admin dashboard, student dashboard, lesson management, and progress tracking.
 
 ---
@@ -143,8 +140,6 @@ http://127.0.0.1:5000/
 ---
 
 🔑 Admin Access
-
-Admin registration requires a special access code defined in your environment variables:
 
 ADMIN_ACCESS_CODE=Admin@123
 
