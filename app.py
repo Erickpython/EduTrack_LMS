@@ -1,4 +1,5 @@
-import os, re
+import os
+import re
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,20 +9,15 @@ from flask_wtf import CSRFProtect
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY') or os.urandom(24)
 
-
 # ======= DATABASE CONFIGURATION =======
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database/lms.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
-
 # ======= INITIALIZE DATABASE =======
 db = SQLAlchemy(app)
 # Enable CSRF protection (templates can use {{ csrf_token() }})
-csrf = CSRFProtect(app)   # removing csfr
-
-
+csrf = CSRFProtect(app)
 
 # ======= USER MODEL =======
 class Grade(db.Model):
@@ -34,8 +30,9 @@ class Student(db.Model):
     __tablename__ = 'students'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    # increase length to safely store hashed passwords
+    password = db.Column(db.String(200), nullable=False)
 
     grade_id = db.Column(db.Integer, db.ForeignKey('grades.id'), nullable=False)
     current_grade_id = db.Column(db.Integer, db.ForeignKey('grades.id'))
@@ -47,7 +44,7 @@ class Student(db.Model):
 
     def __repr__(self):
         return f'<Student {self.name}, Email: {self.email}, Grade ID: {self.grade_id}>'
-    
+
 # subject model 
 class Subject(db.Model):
     __tablename__ = 'subjects'
@@ -58,7 +55,6 @@ class Subject(db.Model):
 
     def __repr__(self):
         return f'<Subject {self.name}, Grade ID: {self.grade_id}>'
-
 
 # lessons model
 class Lesson(db.Model):
@@ -77,16 +73,16 @@ class Lesson(db.Model):
 
     def __repr__(self):
         return f'<Lesson {self.title}, Subject ID: {self.subject_id}>'
-    
+
 # Progress model
 class Progress(db.Model):
     __tablename__ = 'progress'
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
     lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.id'), nullable=False)
-    
+
     completed = db.Column(db.Boolean, default=False)
-    score = db.Column(db.Float, default= 0.0)
+    score = db.Column(db.Float, default=0.0)
     unlocked = db.Column(db.Boolean, default=False)
 
     student = db.relationship('Student', backref=db.backref("progress_records", lazy=True))
@@ -100,8 +96,8 @@ class Admin(db.Model):
     __tablename__ = 'admins'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)  # Store hashed passwords
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)  # Store hashed passwords
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -113,14 +109,14 @@ class Admin(db.Model):
 with app.app_context():
     db.create_all()
 
-# default grades
+    # default grades
     if not Grade.query.first():
         for i in range (1, 10):
             grade = Grade(name=f'Grade {i}')
             db.session.add(grade)
         db.session.commit()
 
-# populate  subjects in  each grade
+    # populate  subjects in  each grade
     if not Subject.query.first():
         grades = Grade.query.all()
         default_subjects = ['Numeracy_MATHS', 'Literacy_ENG', 'Computer Studies']
@@ -130,7 +126,7 @@ with app.app_context():
                 db.session.add(subject)
         db.session.commit()
 
-# populate lessons for each subject
+    # populate lessons for each subject
     if not Lesson.query.first():
         subjects = Subject.query.all()
         for subject in subjects:
@@ -143,8 +139,6 @@ with app.app_context():
                     is_locked=True if i > 1 else False  # Unlock only the first lesson
                 ))
         db.session.commit()
-
-        
 
 # ======= ROUTES =======
 @app.route('/')
@@ -209,7 +203,7 @@ def register():
             flash('An internal error occurred; please try again later.', 'danger')
             grades = Grade.query.all()
             return render_template('register.html', grades=grades)
-        
+
         lessons = Lesson.query.join(Subject).join(Grade).filter(Grade.id <= grade_id).all()
         for lesson in lessons:
             progress = Progress(student_id=new_student.id, lesson_id=lesson.id, completed=False, unlocked=(lesson.order == 1))
@@ -246,7 +240,7 @@ def login():
 def dashboard():
     if 'student_id' not in session:
         return redirect(url_for('login'))
-    
+
     student = Student.query.get(session['student_id'])
 
     #getting grades 
@@ -278,11 +272,11 @@ def subject_lessons(subject_id):
     student_id = session.get('student_id')
     if not student_id:
         return redirect(url_for('login'))
-    
+
 
     subject = Subject.query.get(subject_id)
     lessons = Lesson.query.filter_by(subject_id=subject_id).order_by(Lesson.order).all()
-    
+
 
     lesson_progress = []
     for lesson in lessons:
@@ -295,17 +289,18 @@ def subject_lessons(subject_id):
 @app.route('/admin/register', methods=['GET', 'POST'])
 def admin_register():
     if request.method == 'POST':
-        access_code = request.form.get['access_code']
+        # FIXED: use request.form.get(...) not request.form.get[...]
+        access_code = request.form.get('access_code', '').strip()
         expected_code = os.environ.get('ADMIN_ACCESS_CODE', 'Admin@123')
 
 
         if access_code != expected_code:
             flash('Invalid access code for admin registration.', 'danger')
             return redirect(url_for('admin_register'))
-        
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
+
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
 
         if Admin.query.filter_by(email=email).first():
             flash('Admin with this email already exists.', 'danger')
@@ -343,7 +338,7 @@ def admin_dashboard():
     if 'admin_id' not in session:
         flash('Please log in as admin to access the admin dashboard.', 'danger')
         return redirect(url_for('admin_login'))
-    
+
     admin = Admin.query.get(session['admin_id'])    
     students = Student.query.all()
     lessons = Lesson.query.all()
@@ -363,4 +358,3 @@ if __name__ == '__main__':
     # Read debug mode from environment variable with safe default of False
     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ('true', '1', 'yes')
     app.run(debug=debug_mode)
-
