@@ -26,12 +26,7 @@
       color: #fff !important;
     }
 
-    .btn-outline-light {
-      border-radius: 8px;
-      font-weight: 500;
-    }
-
-    .btn-danger {
+    .btn-outline-light, .btn-danger {
       border-radius: 8px;
       font-weight: 500;
     }
@@ -40,7 +35,8 @@
       background: rgba(255, 255, 255, 0.95);
       border-radius: 20px;
       padding: 2rem 2.5rem;
-      margin-top: 2rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       animation: fadeIn 0.6s ease-in-out;
     }
@@ -55,6 +51,7 @@
       font-weight: 700;
       text-align: center;
       margin-bottom: 2rem;
+      font-size: 1.5rem;
     }
 
     .card {
@@ -71,10 +68,11 @@
     .card-title {
       color: #0d47a1;
       font-weight: 600;
+      font-size: 1rem;
     }
 
     .card-text {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #555;
     }
 
@@ -89,9 +87,7 @@
       background-color: #1e88e5;
     }
 
-    .btn-primary {
-      background-color: #1e88e5;
-      border: none;
+    .btn-primary, .btn-secondary {
       border-radius: 8px;
       font-weight: 500;
       transition: 0.3s;
@@ -102,7 +98,6 @@
     }
 
     .btn-secondary {
-      border-radius: 8px;
       opacity: 0.7;
     }
 
@@ -111,6 +106,7 @@
       border: none;
       color: #1565c0;
       font-weight: 500;
+      text-align: center;
     }
 
     .back-btn {
@@ -119,6 +115,54 @@
       font-weight: 500;
       padding: 8px 16px;
     }
+
+    /* Mobile Responsive Tweaks */
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 1.3rem;
+      }
+
+      .card-title {
+        font-size: 0.95rem;
+      }
+
+      .card-text {
+        font-size: 0.8rem;
+      }
+
+      .progress-bar {
+        font-size: 0.75rem;
+      }
+
+      .btn {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+      }
+
+      .navbar-brand {
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .container {
+        padding: 1.5rem 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .back-btn {
+        width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .card-body {
+        padding: 0.8rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -126,9 +170,9 @@
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container-fluid px-4">
     <a class="navbar-brand" href="#">EduTrack LMS</a>
-    <div class="d-flex">
-      <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light me-2">Dashboard</a>
-      <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-sm">Dashboard</a>
+      <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
     </div>
   </div>
 </nav>
@@ -137,15 +181,15 @@
   <h2>📘 {{ subject.name }} - Lessons</h2>
 
   {% if lesson_progress %}
-    <div class="row">
+    <div class="row g-3">
       {% for lesson, progress in lesson_progress %}
-        <div class="col-md-6 mb-4">
+        <div class="col-md-6 col-sm-12">
           <div class="card shadow-sm h-100">
             <div class="card-body">
               <h5 class="card-title">{{ lesson.title }}</h5>
               <p class="card-text">{{ lesson.description }}</p>
 
-              <div class="d-flex justify-content-between small text-muted">
+              <div class="d-flex justify-content-between small text-muted flex-wrap">
                 <span>Status:
                   {% if progress.completed %}
                     <span class="text-success fw-semibold">Completed</span>
