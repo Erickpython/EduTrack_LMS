@@ -14,7 +14,10 @@
       justify-content: center;
       align-items: center;
       color: #333;
+      padding: 15px; /* Prevents content from touching edges on mobile */
+      box-sizing: border-box;
     }
+
     .register-container {
       background: #fff;
       padding: 40px 35px;
@@ -24,15 +27,19 @@
       max-width: 420px;
       text-align: center;
     }
+
     h2 {
       color: #007bff;
       margin-bottom: 15px;
+      font-size: 1.8rem;
     }
+
     p {
       color: #666;
       margin-bottom: 20px;
       font-size: 0.95rem;
     }
+
     label {
       display: block;
       text-align: left;
@@ -40,6 +47,7 @@
       font-weight: 500;
       color: #444;
     }
+
     input {
       width: 100%;
       padding: 10px 12px;
@@ -49,11 +57,13 @@
       font-size: 1rem;
       box-sizing: border-box;
     }
+
     input:focus {
       outline: none;
       border-color: #007bff;
       box-shadow: 0 0 5px rgba(0,123,255,0.4);
     }
+
     button {
       width: 100%;
       padding: 12px;
@@ -66,13 +76,16 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
+
     button:hover {
       background: #0056b3;
     }
+
     .flash-messages {
       margin-bottom: 15px;
       text-align: left;
     }
+
     .flash-messages li {
       list-style: none;
       padding: 10px;
@@ -80,16 +93,52 @@
       margin-bottom: 5px;
       font-size: 0.9rem;
     }
+
     .flash-messages .success { background-color: #d4edda; color: #155724; }
     .flash-messages .danger { background-color: #f8d7da; color: #721c24; }
     .flash-messages .warning { background-color: #fff3cd; color: #856404; }
+
     .links a {
       color: #007bff;
       text-decoration: none;
       font-size: 0.9rem;
     }
+
     .links a:hover {
       text-decoration: underline;
+    }
+
+    /* ================================
+          MOBILE RESPONSIVENESS
+       ================================ */
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+        height: auto; /* Removed forced full height causing overflow */
+      }
+
+      .register-container {
+        padding: 25px 20px;
+        border-radius: 12px;
+      }
+
+      h2 {
+        font-size: 1.6rem;
+      }
+
+      input, button {
+        font-size: 0.95rem;
+        padding: 10px;
+      }
+
+      p, .links a {
+        font-size: 0.85rem;
+      }
+
+      .flash-messages li {
+        font-size: 0.85rem;
+        padding: 8px;
+      }
     }
   </style>
 </head>
@@ -112,7 +161,7 @@
 
     <form method="POST">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      
+
       <label for="name">Full Name:</label>
       <input type="text" id="name" name="name" placeholder="Enter full name" required>
 
