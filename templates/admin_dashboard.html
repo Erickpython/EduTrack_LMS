@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | EduTrack LMS</title>
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -10,6 +12,7 @@
             margin: 0;
             padding: 0;
         }
+
         header {
             background-color: #004aad;
             color: white;
@@ -17,22 +20,33 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap; /* allows items to wrap on small screens */
         }
+
         header h1 {
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
         }
+
+        nav {
+            margin-top: 0.5rem;
+        }
+
         nav a {
             color: white;
             margin-left: 1rem;
             text-decoration: none;
+            font-size: 0.95rem;
         }
+
         nav a:hover {
             text-decoration: underline;
         }
+
         main {
-            padding: 2rem;
+            padding: 1.2rem;
         }
+
         .card {
             background-color: white;
             padding: 1rem;
@@ -40,23 +54,30 @@
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
+
         h2 {
             color: #004aad;
+            font-size: 1.3rem;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
+            font-size: 0.9rem;
         }
+
         th, td {
             padding: 0.8rem;
             border-bottom: 1px solid #ddd;
             text-align: left;
         }
+
         th {
             background-color: #004aad;
             color: white;
         }
+
         button {
             background-color: #004aad;
             color: white;
@@ -65,15 +86,82 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #003680;
         }
+
         .logout-btn {
             background-color: #dc3545;
+            padding: 0.45rem 0.9rem;
+        }
+
+        /* ---------------------------------- */
+        /*  MOBILE RESPONSIVENESS             */
+        /* ---------------------------------- */
+        @media (max-width: 768px) {
+
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav {
+                margin-top: 0.7rem;
+            }
+
+            nav a {
+                margin-left: 0.5rem;
+                margin-right: 0.5rem;
+                display: inline-block;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            /* Make table responsive by stacking rows */
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 1rem;
+                background: #ffffff;
+                padding: 0.8rem;
+                border-radius: 8px;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            }
+
+            td {
+                padding: 0.5rem 0;
+                display: flex;
+                justify-content: space-between;
+                border: none;
+                font-size: 0.95rem;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: #004aad;
+            }
+
+            /* Form scaling */
+            input[type="text"],
+            input[type="file"] {
+                width: 100% !important;
+            }
         }
     </style>
+
 </head>
 <body>
+
     <header>
         <h1>EduTrack LMS - Admin Dashboard</h1>
         <nav>
@@ -89,24 +177,30 @@
         <!-- Students Section -->
         <div class="card">
             <h3>Registered Students</h3>
+
             <table>
                 <thead>
                     <tr>
-                        <th>Name</th><th>Email</th><th>Grade</th><th>Progress</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Grade</th>
+                        <th>Progress</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {% for student in students %}
-                        <tr>
-                            <td>{{ student.name }}</td>
-                            <td>{{ student.email }}</td>
-                            <td>{{ student.grade.name }}</td>
-                            <td>
-                                <a href="#" style="color: #004aad;">View Progress</a>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td data-label="Name">{{ student.name }}</td>
+                        <td data-label="Email">{{ student.email }}</td>
+                        <td data-label="Grade">{{ student.grade.name }}</td>
+                        <td data-label="Progress">
+                            <a href="#" style="color: #004aad;">View Progress</a>
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
+
             </table>
         </div>
 
@@ -125,9 +219,10 @@
             <h3>Manage Lessons</h3>
             <form method="post" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <label>Lesson Title:</label><br>
                 <input type="text" name="title" required style="width: 50%; padding: 0.5rem;"><br><br>
-                
+
                 <label>Upload Notes:</label><br>
                 <input type="file" name="notes"><br><br>
 
@@ -137,6 +232,8 @@
                 <button type="submit">Upload Lesson</button>
             </form>
         </div>
+
     </main>
+
 </body>
 </html>
