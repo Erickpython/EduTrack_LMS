@@ -5,9 +5,7 @@
 
 Built using **Flask (Python)**, EduTrack provides both **Student** and **Admin/Teacher** dashboards for seamless content management and learning delivery.
 
-This system supports **UN Sustainable Development Goal 4 (SDG4)** — *Quality Education for All* by improving access to digital learning resources.
-
-The website is live and accessible at: *(https://edutrack-fjzc.onrender.com/)*
+This system supports **UN Sustainable Development Goal 4 (SDG4)** — *Quality Education for All* by improving access to digital learning resources. The website is live and accessible at: *(https://edutrack-fjzc.onrender.com/)*
 
 ---
 
