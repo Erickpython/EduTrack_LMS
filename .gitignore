@@ -1,2 +1,12 @@
 eduvenv/
 __pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+*.pyc
+.vscode/
+.DS_Store
+.env
+.env.*
+.idea/
+*.iml
+migrations/
